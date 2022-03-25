@@ -11,3 +11,11 @@ module.hot &&
     // More brutal
     window.location.reload();
   });
+
+if (
+  /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(
+    navigator.userAgent
+  )
+) {
+  alert("Warning: It drinks battery juice!");
+}
