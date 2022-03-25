@@ -32,26 +32,37 @@ export default class {
     //   "mouseup",
     //   (e) => (this.keyFind("w").pressed = false)
     // );
-    document.body.addEventListener(
-      "gesturestart",
-      (e: any) => {
-        console.log(e);
-        if (e.scale < 1) {
-          this.keyFind("s").pressed = true;
-        } else if (e.scale > 1) {
-          this.keyFind("w").pressed = true;
-        }
-      },
-      false
-    );
-    document.body.addEventListener(
-      "gesturend",
-      (e) => {
+    // document.body.addEventListener(
+    //   "gesturestart",
+    //   (e: any) => {
+    //     console.log(e);
+    //     if (e.scale < 1) {
+    //       this.keyFind("s").pressed = true;
+    //     } else if (e.scale > 1) {
+    //       this.keyFind("w").pressed = true;
+    //     }
+    //   },
+    //   false
+    // );
+    // document.body.addEventListener(
+    //   "gesturend",
+    //   (e) => {
+    //     this.keyFind("w").pressed = false;
+    //     this.keyFind("s").pressed = false;
+    //   },
+    //   false
+    // );
+    document.body.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      if (e.deltaY < 0) {
         this.keyFind("w").pressed = true;
+      } else if (e.deltaY > 0) {
         this.keyFind("s").pressed = true;
-      },
-      false
-    );
+      } else {
+        this.keyFind("w").pressed = false;
+        this.keyFind("s").pressed = false;
+      }
+    });
   }
   keydown(e) {
     // console.log(e.key);
