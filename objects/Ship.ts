@@ -2,18 +2,9 @@ import { scene } from "../engine/Renderer";
 import * as THREE from "three";
 import { Vector3 } from "three";
 import { between } from "../lib/utils";
-const createTorch = () => {
-  //  SpotLight / DirectionalLight / PointLight
-  const torch = new THREE.SpotLight(0xffffff, 1);
-  torch.castShadow = true;
-  torch.shadow.camera.near = 100; // default .5 (flickering)
-  // torch.shadow.camera.far = 1000; // default 500
-  return torch;
-};
 export default class {
   public object: THREE.Object3D;
   public camera: THREE.Camera;
-  private torch;
   private impulses = {
     forward: {
       speed: 0, // m/s
@@ -37,14 +28,16 @@ export default class {
     },
   };
   constructor({ offset }: { offset?: { x: number; y: number; z: number } }) {
-    const shipGeometry = new THREE.BoxGeometry(2, 0.5, 1);
+    const shipGeometry = new THREE.BoxGeometry(0.04, 0.02, 0.02);
     this.object = new THREE.Mesh(
       shipGeometry,
-      new THREE.MeshPhongMaterial({
-        side: THREE.DoubleSide, // debug only
-        color: 0xaaaaaa,
-        opacity: 0.2,
-        // wireframe: true,
+      // new THREE.MeshPhongMaterial({
+      //   side: THREE.DoubleSide, // debug only
+      //   color: 0xffaa77,
+      //   wireframe: true,
+      // })
+      new THREE.MeshBasicMaterial({
+        opacity: 0,
       })
     );
     this.object.castShadow = true;
@@ -53,11 +46,6 @@ export default class {
     this.object.position.y = offset?.y || 0;
     this.object.position.z = offset?.z || 0;
     scene.add(this.object);
-    this.torch = createTorch();
-    // offset from this.object (ship)
-    this.torch.position.z = -5;
-    this.torch.target.position.z = -20;
-    this.object.add(this.torch, this.torch.target);
     //
   }
   public move(direction, sign = 1) {

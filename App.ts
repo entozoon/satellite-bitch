@@ -6,7 +6,18 @@ import * as satelliteJs from "satellite.js";
 import chunk from "lodash/chunk";
 export const anaglyphMode = false;
 const julianToMillis = (julian) => (julian - 2440587.5) * 86400000;
-const attemptStuff = ({ name, tle1, tle2 }) => {
+// https://gist.github.com/nicoptere/2f2571db4b454bb18cd9
+const latLngToXYZUnit = ({ lat, lng }) => {
+  // flips the Y axis
+  lat = Math.PI / 2 - lat;
+  // distribute to sphere
+  return {
+    x: Math.sin(lat) * Math.sin(lng),
+    y: Math.cos(lat),
+    z: Math.sin(lat) * Math.cos(lng),
+  };
+};
+const attemptStuff = ({ name, tle1, tle2, sat }) => {
   // Initialize a satellite record
   var satrec = satelliteJs.twoline2satrec(tle1, tle2);
   //  Propagate satellite using time since epoch (in minutes).
@@ -33,15 +44,21 @@ position:       ${JSON.stringify(positionAndVelocity.position)}
 velocity:       ${JSON.stringify(positionAndVelocity.velocity)}
 epoch:          ${epoch.toISOString()}
 daysSinceEpoch: ${daysSinceEpoch}
-longitude:      ${positionGeodetic.longitude},
 latitude:       ${positionGeodetic.latitude},
+longitude:      ${positionGeodetic.longitude},
 height(km):     ${positionGeodetic.height}
+pos:          ${JSON.stringify(
+      latLngToXYZUnit({
+        lat: positionGeodetic.latitude,
+        lng: positionGeodetic.longitude,
+      })
+    )}
     `);
-  }, 1000);
+    sat.position.set(0, 0, 100000 - Math.random() * 50);
+  }, 100);
 };
 export default class App {
   private hero;
-  private cubeSpinner;
   public data;
   fetchData() {
     axios
@@ -68,19 +85,14 @@ export default class App {
         }));
       })
       .then((satellites) => {
-        satellites.forEach(({ name, tle1, tle2 }) => {
-          attemptStuff({ name, tle1, tle2 });
-        });
+        // satellites.forEach(({ name, tle1, tle2 }) => {
+        //   attemptStuff({ name, tle1, tle2 });
+        // });
       });
   }
   constructor() {
     // setInterval ..
     // this.fetchData();
-    attemptStuff({
-      name: "ISS (ZARYA)",
-      tle1: "1 25544U 98067A   22084.12316441  .00006730  00000+0  12782-3 0  9996",
-      tle2: "2 25544  51.6446  32.9367 0004076 310.4490 170.3824 15.49536326332148",
-    });
     //
     reset();
     renderer.setAnimationLoop(this.loop.bind(this));
@@ -88,13 +100,39 @@ export default class App {
     this.hero = new Hero();
     //
     // EARTH (scale = kilometers)
-    const geometry = new THREE.SphereGeometry(6371, 64, 64);
-    const material = new THREE.MeshBasicMaterial({ color: 0xaaccff });
-    const sphere = new THREE.Mesh(geometry, material);
-    scene.add(sphere);
+    const earthGeometry = new THREE.SphereGeometry(6371, 64, 64);
+    const earthMaterial = new THREE.MeshBasicMaterial({ color: 0xaaccff });
+    const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+    scene.add(earth);
     //
     const lightAmbient = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(lightAmbient);
+    //
+    const satGeometry = new THREE.SphereGeometry(0.01, 10, 10);
+    // const satMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    // const satMaterial = new THREE.MeshPhongMaterial({
+    //   color: 0xff00ff,
+    //   wireframe: true,
+    // });
+    const satMaterial = new THREE.MeshLambertMaterial({
+      color: 0xff00ff,
+      side: THREE.BackSide,
+    });
+    satMaterial.onBeforeCompile = (shader) => {
+      const token = "#include <begin_vertex>";
+      const customTransform = `
+        vec3 transformed = position + objectNormal*0.05;
+    `;
+      shader.vertexShader = shader.vertexShader.replace(token, customTransform);
+    };
+    const sat = new THREE.Mesh(satGeometry, satMaterial);
+    scene.add(sat);
+    attemptStuff({
+      name: "ISS (ZARYA)",
+      tle1: "1 25544U 98067A   22084.12316441  .00006730  00000+0  12782-3 0  9996",
+      tle2: "2 25544  51.6446  32.9367 0004076 310.4490 170.3824 15.49536326332148",
+      sat,
+    });
   }
   loop(time) {
     const dt = clock.getDelta(); // Always use this
