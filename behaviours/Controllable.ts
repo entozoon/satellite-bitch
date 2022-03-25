@@ -24,6 +24,34 @@ export default class {
     this.parent = parent;
     document.body.addEventListener("keydown", this.keydown.bind(this), false);
     document.body.addEventListener("keyup", this.keyup.bind(this), false);
+    // document.body.addEventListener(
+    //   "mousedown",
+    //   (e) => (this.keyFind("w").pressed = true)
+    // );
+    // document.body.addEventListener(
+    //   "mouseup",
+    //   (e) => (this.keyFind("w").pressed = false)
+    // );
+    document.body.addEventListener(
+      "gesturestart",
+      (e: any) => {
+        console.log(e);
+        if (e.scale < 1) {
+          this.keyFind("s").pressed = true;
+        } else if (e.scale > 1) {
+          this.keyFind("w").pressed = true;
+        }
+      },
+      false
+    );
+    document.body.addEventListener(
+      "gesturend",
+      (e) => {
+        this.keyFind("w").pressed = true;
+        this.keyFind("s").pressed = true;
+      },
+      false
+    );
   }
   keydown(e) {
     // console.log(e.key);
