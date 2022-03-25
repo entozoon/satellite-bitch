@@ -1,11 +1,81 @@
 import Hero from "./entities/Hero";
 import * as THREE from "three";
 import { clock, renderer, reset, scene } from "./engine/Renderer";
+import axios from "axios";
+import * as satelliteJs from "satellite.js";
+import chunk from "lodash/chunk";
 export const anaglyphMode = false;
+const julianToMillis = (julian) => (julian - 2440587.5) * 86400000;
+const attemptStuff = ({ name, tle1, tle2 }) => {
+  // Initialize a satellite record
+  var satrec = satelliteJs.twoline2satrec(tle1, tle2);
+  //  Propagate satellite using time since epoch (in minutes).
+  // const timeSinceTleEpochMinutes = 0; // ?????
+  // var positionAndVelocity = satelliteJs.sgp4(satrec, timeSinceTleEpochMinutes);
+  //  Or you can use a JavaScript Date
+  let date = new Date();
+  setInterval(() => {
+    date.setSeconds(date.getSeconds() + 60);
+    const positionAndVelocity = satelliteJs.propagate(satrec, date);
+    // The position_velocity result is a key-value pair of ECI coordinates.
+    // These are the base results from which all other coordinates are derived.
+    const positionEci = positionAndVelocity.position,
+      velocityEci = positionAndVelocity.velocity;
+    const epoch = new Date(julianToMillis(satrec.jdsatepoch));
+    const elapsedSinceEpochMillis = new Date().getTime() - epoch.getTime();
+    const elapsedSinceEpochDays = elapsedSinceEpochMillis / 1000 / 60 / 60 / 24;
+    console.log(`
+    positionAndVelocity: ${JSON.stringify(positionAndVelocity)}
+    positionEci: ${JSON.stringify(positionEci)}
+    velocityEci: ${JSON.stringify(velocityEci)}
+    epoch: ${epoch.toISOString()}
+    elapsedSinceEpochDays: ${elapsedSinceEpochDays}
+  `);
+  }, 1000);
+};
 export default class App {
   private hero;
   private cubeSpinner;
+  public data;
+  fetchData() {
+    axios
+      .get(
+        // "https://api.allorigins.win/raw?url=http://www.celestrak.com/NORAD/elements/active.txt"
+        "https://api.allorigins.win/raw?url=https://celestrak.com/NORAD/elements/gp.php?GROUP=stations&FORMAT=tle"
+        // ISS (ZARYA)
+        // 1 25544U 98067A   22084.12316441  .00006730  00000+0  12782-3 0  9996
+        // 2 25544  51.6446  32.9367 0004076 310.4490 170.3824 15.49536326332148
+      )
+      .then((res) => res?.data)
+      .then((data) => {
+        // [ "ISS (ZARYA)",
+        //   "1 25544U 98067A   22084.12316441  .00006730  00000+0  12782-3 0  9996",
+        //   "2 25544  51.6446  32.9367 0004076 310.4490 170.3824 15.49536326332148", ]
+        const chunks = chunk(
+          data.split("\n").map((l) => l.replace("\n", "")),
+          3
+        );
+        return chunks.map((chunk) => ({
+          name: chunk[0],
+          tle1: chunk[1],
+          tle2: chunk[2],
+        }));
+      })
+      .then((satellites) => {
+        satellites.forEach(({ name, tle1, tle2 }) => {
+          attemptStuff({ name, tle1, tle2 });
+        });
+      });
+  }
   constructor() {
+    // setInterval ..
+    // this.fetchData();
+    attemptStuff({
+      name: "ISS (ZARYA)",
+      tle1: "1 25544U 98067A   22084.12316441  .00006730  00000+0  12782-3 0  9996",
+      tle2: "2 25544  51.6446  32.9367 0004076 310.4490 170.3824 15.49536326332148",
+    });
+    //
     reset();
     renderer.setAnimationLoop(this.loop.bind(this));
     delete this.hero;
