@@ -1,7 +1,7 @@
 import { Vector3 } from "three";
 export default class {
   private parent;
-  private keys = [
+  public keys = [
     { keys: ["w"], pressed: false },
     { keys: ["s"], pressed: false },
     { keys: ["a"], pressed: false },
@@ -19,7 +19,7 @@ export default class {
     [],
     this.keys.map((k) => k.keys)
   );
-  private keyFind = (key) => this.keys.find((k) => k.keys.includes(key));
+  keyFind = (key) => this.keys.find((k) => k.keys.includes(key));
   constructor(parent) {
     this.parent = parent;
     document.body.addEventListener("keydown", this.keydown.bind(this), false);
@@ -44,25 +44,14 @@ export default class {
     //   },
     //   false
     // );
-    document.body.addEventListener(
-      "gesturend",
-      (e) => {
-        this.keyFind("w").pressed = false;
-        this.keyFind("s").pressed = false;
-      },
-      false
-    );
-    document.body.addEventListener("wheel", (e) => {
-      if (e.deltaY < 0) {
-        this.keyFind("w").pressed = true;
-      } else if (e.deltaY > 0) {
-        this.keyFind("s").pressed = true;
-      } else {
-        // Argh, there is no end gesture for wheel
-        // this.keyFind("w").pressed = false;
-        // this.keyFind("s").pressed = false;
-      }
-    });
+    // document.body.addEventListener(
+    //   "gesturend",
+    //   (e) => {
+    //     this.keyFind("w").pressed = false;
+    //     this.keyFind("s").pressed = false;
+    //   },
+    //   false
+    // );
   }
   keydown(e) {
     // console.log(e.key);
@@ -131,3 +120,44 @@ export default class {
     }
   }
 }
+export const initTouchEvents = (controls) => {
+  document.body.addEventListener(
+    "wheel",
+    (e) => {
+      e.preventDefault();
+      // Two-finger scroll
+      // if (Math.random() > 0.99) console.log(e.deltaY);
+      // Debounce can't be (this.) because the scope is lost
+      // Also argh, there is no end gesture for wheel
+      if (e.deltaY || e.deltaX) {
+        if (e.deltaY > 0) {
+          clearTimeout((window as any).touchDebounceForward);
+          controls.keyFind("w").pressed = true;
+          (window as any).touchDebounceForward = setTimeout(() => {
+            controls.keyFind("w").pressed = false;
+          }, 100);
+        } else if (e.deltaY < 0) {
+          clearTimeout((window as any).touchDebounceBackward);
+          controls.keyFind("s").pressed = true;
+          (window as any).touchDebounceBackward = setTimeout(() => {
+            controls.keyFind("s").pressed = false;
+          }, 100);
+        }
+        if (e.deltaX > 20) {
+          clearTimeout((window as any).touchDebounceLeft);
+          controls.keyFind("ArrowLeft").pressed = true;
+          (window as any).touchDebounceLeft = setTimeout(() => {
+            controls.keyFind("ArrowLeft").pressed = false;
+          }, 100);
+        } else if (e.deltaX < -20) {
+          clearTimeout((window as any).touchDebounceRight);
+          controls.keyFind("ArrowRight").pressed = true;
+          (window as any).touchDebounceRight = setTimeout(() => {
+            controls.keyFind("ArrowRight").pressed = false;
+          }, 100);
+        }
+      }
+    },
+    { passive: false }
+  );
+};

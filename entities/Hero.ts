@@ -1,4 +1,4 @@
-import Controllable from "../behaviours/Controllable";
+import Controllable, { initTouchEvents } from "../behaviours/Controllable";
 import Camera from "../engine/Camera";
 import Ship from "../objects/Ship";
 export default class {
@@ -18,6 +18,7 @@ export default class {
   public controls = new Controllable(this);
   constructor() {
     // this.ship.camera = this.camShip.camera;
+    initTouchEvents(this.controls);
   }
   public update(dt: number) {
     this.ship.update(dt);
