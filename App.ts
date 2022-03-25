@@ -12,11 +12,20 @@ export default class App {
   private updateChunk = 100;
   private fetchData() {
     this.satellites = [];
-    fetchSatellites(
-      "https://api.allorigins.win/raw?url=https://celestrak.com/NORAD/elements/gp.php?GROUP=stations&FORMAT=tle"
-    )
-      .then((satellites: any) => {
-        satellites.forEach((satellite, i) => {
+    [
+      // Space stations
+      "https://api.allorigins.win/raw?url=https://celestrak.com/NORAD/elements/gp.php?GROUP=stations&FORMAT=tle",
+      // GPS
+      "https://api.allorigins.win/raw?url=https://celestrak.com/NORAD/elements/gp.php?GROUP=gnss&FORMAT=tle",
+      // Weather
+      "https://api.allorigins.win/raw?url=https://celestrak.com/NORAD/elements/gp.php?GROUP=weather&FORMAT=tle",
+      // Earth Resources (oceanography, cartography, search rescue)
+      "https://api.allorigins.win/raw?url=https://celestrak.com/NORAD/elements/gp.php?GROUP=resource&FORMAT=tle",
+      // All others
+      "https://api.allorigins.win/raw?url=https://celestrak.com/NORAD/elements/gp.php?GROUP=active&FORMAT=tle",
+    ].forEach((url) => {
+      fetchSatellites(url).then((satellites: any) => {
+        satellites?.forEach((satellite, i) => {
           const s = new Satellite({
             satellite,
             cameraPosition: this.hero.ship.object.position,
@@ -24,32 +33,17 @@ export default class App {
             total: satellites.length,
             highlight: satellite.name === "ISS (ZARYA)",
           });
-          this.satellites.push(s);
-        });
-      })
-      .then(() =>
-        fetchSatellites(
-          "https://api.allorigins.win/raw?url=https://celestrak.com/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
-        )
-      )
-      .then((satellites: any) => {
-        satellites.forEach((satellite, i) => {
-          const s = new Satellite({
-            satellite,
-            cameraPosition: this.hero.ship.object.position,
-            i,
-            total: satellites.length,
-          });
           // Avoid duplication
-          if (this.satellites.find((_) => _.name === s.name)) return;
-          this.satellites.push(s);
-        });
-      })
-      .finally(() => {
-        this.satellites.forEach((s) => {
-          scene.add(s.object);
+          if (!this.satellites.find((_) => _.name === s.name)) {
+            this.satellites.push(s);
+            scene.add(s.object);
+          }
         });
       });
+    });
+    // setTimeout(() => {
+    //   console.log(this.satellites.find((_) => _.name === "CORIOLIS"));
+    // }, 5000);
   }
   private fakeSatellites() {
     this.satellites = [];
@@ -93,6 +87,16 @@ export default class App {
     const earth = new THREE.Mesh(earthGeometry, earthMaterial);
     earth.rotation.set(Math.PI / 2, 0, 0);
     scene.add(earth);
+    //
+    // MOON (scale = kilometers)
+    const moonGeometry = new THREE.SphereGeometry(1737, 32, 32);
+    const moonMaterial = new THREE.MeshBasicMaterial({
+      color: 0xeeeeee,
+    });
+    // Looking bang down on the north pole
+    const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+    moon.position.set(0, -384400, 0);
+    scene.add(moon);
     //
     // this.fakeSatellites();
     // !!
