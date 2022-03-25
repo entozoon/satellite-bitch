@@ -3,7 +3,6 @@ import * as THREE from "three";
 import { clock, renderer, reset, scene } from "./engine/Renderer";
 import { fetchSatellites } from "./engine/Data";
 import Satellite from "./entities/Satellite";
-import { createMultiMaterialObject } from "three/examples/jsm/utils/SceneUtils.js";
 export const anaglyphMode = false;
 export default class App {
   private firstRun = true;
@@ -12,20 +11,45 @@ export default class App {
   private updateIteration = 0;
   private updateChunk = 100;
   private fetchData() {
-    fetchSatellites.then((satellites: any) => {
-      this.satellites = satellites.map(
-        (satellite, i) =>
-          new Satellite({
+    this.satellites = [];
+    fetchSatellites(
+      "https://api.allorigins.win/raw?url=https://celestrak.com/NORAD/elements/gp.php?GROUP=stations&FORMAT=tle"
+    )
+      .then((satellites: any) => {
+        satellites.forEach((satellite, i) => {
+          const s = new Satellite({
             satellite,
             cameraPosition: this.hero.ship.object.position,
             i,
             total: satellites.length,
-          })
-      );
-      this.satellites.forEach((s) => {
-        scene.add(s.object);
+            highlight: satellite.name === "ISS (ZARYA)",
+          });
+          this.satellites.push(s);
+        });
+      })
+      .then(() =>
+        fetchSatellites(
+          "https://api.allorigins.win/raw?url=https://celestrak.com/NORAD/elements/gp.php?GROUP=active&FORMAT=tle"
+        )
+      )
+      .then((satellites: any) => {
+        satellites.forEach((satellite, i) => {
+          const s = new Satellite({
+            satellite,
+            cameraPosition: this.hero.ship.object.position,
+            i,
+            total: satellites.length,
+          });
+          // Avoid duplication
+          if (this.satellites.find((_) => _.name === s.name)) return;
+          this.satellites.push(s);
+        });
+      })
+      .finally(() => {
+        this.satellites.forEach((s) => {
+          scene.add(s.object);
+        });
       });
-    });
   }
   private fakeSatellites() {
     this.satellites = [];

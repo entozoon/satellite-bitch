@@ -44,9 +44,9 @@ export default class {
     this.controls.update(dt);
     this.camHero.update(dt);
     // this.camShip.update(dt);
-    if (Math.random() > 0.9) {
-      console.log(this.ship.object.position);
-      console.log(this.ship.object.rotation);
-    }
+    // if (Math.random() > 0.9) {
+    //   console.log(this.ship.object.position);
+    //   console.log(this.ship.object.rotation);
+    // }
   }
 }

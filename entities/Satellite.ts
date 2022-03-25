@@ -70,14 +70,15 @@ const calculations = (satellite: any) => {
   };
 };
 export default class {
+  public name;
   public object;
   public controls = new Controllable(this);
   public cameraPosition;
   public i;
   public total;
-  constructor({ satellite, cameraPosition, i, total }) {
+  constructor({ satellite, cameraPosition, i, total, highlight = false }) {
     Object.assign(this, satellite);
-    this.object = satelliteObject();
+    this.object = satelliteObject(highlight);
     this.cameraPosition = cameraPosition;
     this.i = i;
     this.total = total;
