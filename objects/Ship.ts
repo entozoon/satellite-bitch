@@ -8,13 +8,13 @@ export default class {
   private impulses = {
     forward: {
       speed: 0, // m/s
-      acceleration: 100,
-      drag: 50,
+      acceleration: 1000,
+      drag: 500,
     },
     right: {
       speed: 0, // m/s
-      acceleration: 100,
-      drag: 50,
+      acceleration: 1000,
+      drag: 500,
     },
     yaw: {
       speed: 0,
@@ -35,7 +35,7 @@ export default class {
   constructor({
     offset,
   }: {
-    offset?: { x: number; y: number; z: number; rotateX: number };
+    offset?: { x: number; y: number; z: number; rotation: number };
   }) {
     const shipGeometry = new THREE.BoxGeometry(0.04, 0.02, 0.02);
     this.object = new THREE.Mesh(
@@ -55,7 +55,11 @@ export default class {
     this.object.position.x = offset?.x || 0;
     this.object.position.y = offset?.y || 0;
     this.object.position.z = offset?.z || 0;
-    this.object.rotateX(offset?.rotateX || 0);
+    this.object.rotation.set(
+      offset?.rotation?.x,
+      offset?.rotation?.y,
+      offset?.rotation?.z
+    );
     scene.add(this.object);
     //
   }

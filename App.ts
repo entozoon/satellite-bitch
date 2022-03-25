@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { clock, renderer, reset, scene } from "./engine/Renderer";
 import { fetchSatellites } from "./engine/Data";
 import Satellite from "./entities/Satellite";
+import { createMultiMaterialObject } from "three/examples/jsm/utils/SceneUtils.js";
 export const anaglyphMode = false;
 export default class App {
   private firstRun = true;
@@ -48,16 +49,26 @@ export default class App {
     this.hero = new Hero();
     //
     // EARTH (scale = kilometers)
-    const earthGeometry = new THREE.SphereGeometry(6371, 32, 32);
-    const earthMaterial = new THREE.MeshBasicMaterial({
-      color: 0x112233,
+    const earthGeometry = new THREE.SphereGeometry(6371, 64, 64);
+    const earthMaterial = new THREE.MeshPhongMaterial({
+      // Bloody hell, DoubleSide translucent spheres are just not  possible no matter what I try!
+      // color: 0x112233,
+      color: 0xaaccff,
+      // side: THREE.DoubleSide,
+      opacity: 0.05,
+      transparent: true,
       wireframe: true,
+      // blending: THREE.AdditiveBlending,
+      // metalness: 0.5,
+      // shininess: 100,
+      // flatShading: true,
+      // vertexColors: true,
+      // depthWrite: true,
     });
+    // Looking bang down on the north pole
     const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+    earth.rotation.set(Math.PI / 2, 0, 0);
     scene.add(earth);
-    //
-    // const lightAmbient = new THREE.AmbientLight(0xffffff, 1);
-    // scene.add(lightAmbient);
     //
     // this.fakeSatellites();
     // !!
@@ -66,13 +77,6 @@ export default class App {
       this.fetchData();
     }, 24 * 60 * 60 * 1000);
     // !!
-    //
-    // attemptStuff({
-    //   name: "ISS (ZARYA)",
-    //   tle1: "1 25544U 98067A   22084.12316441  .00006730  00000+0  12782-3 0  9996",
-    //   tle2: "2 25544  51.6446  32.9367 0004076 310.4490 170.3824 15.49536326332148",
-    //   sat,
-    // });
   }
   loop(time) {
     const dt = clock.getDelta(); // Always use this

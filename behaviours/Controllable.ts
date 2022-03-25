@@ -101,10 +101,10 @@ export default class {
     //   ship.move("yaw", 1);
     // }
     if (this.keyFind("ArrowUp").pressed) {
-      ship.move("pitch", -1);
+      ship.move("pitch", 1);
     }
     if (this.keyFind("ArrowDown").pressed) {
-      ship.move("pitch", 1);
+      ship.move("pitch", -1);
     }
     if (this.keyFind("a").pressed) {
       ship.move("right", -1);

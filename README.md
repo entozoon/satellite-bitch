@@ -6,3 +6,5 @@
 
 - Moon!
 - Anaglyph Mode
+- Space stations
+- Colouring

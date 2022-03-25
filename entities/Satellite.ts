@@ -1,5 +1,4 @@
 import * as satelliteJs from "satellite.js";
-import { julianToMillis, latLngHeightToXYZ } from "../lib/utils";
 import Controllable from "../behaviours/Controllable";
 import { satelliteObject } from "../objects/Satellite";
 const calculations = (satellite: any) => {
