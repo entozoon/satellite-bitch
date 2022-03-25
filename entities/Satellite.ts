@@ -3,7 +3,7 @@ import { julianToMillis, latLngHeightToXYZ } from "../lib/utils";
 import Controllable from "../behaviours/Controllable";
 import { satelliteObject } from "../objects/Satellite";
 const calculations = (satellite: any) => {
-  const { name, tle1, tle2, sat } = satellite;
+  const { tle1, tle2 } = satellite;
   if (!tle1 || !tle2) return {};
   // Initialize a satellite record
   var satrec = satelliteJs.twoline2satrec(tle1, tle2);
@@ -14,32 +14,31 @@ const calculations = (satellite: any) => {
   let date = new Date();
   // date.setSeconds(date.getSeconds() + 60);
   //
-  // ^^ ********** !!!
+  // ^^ ********** !!!? Seems to update naturally, with gmst in positionEci
   //
   const positionAndVelocity = satelliteJs.propagate(satrec, date);
   if (!positionAndVelocity?.position) return {};
-  const { position, velocity } = positionAndVelocity;
+  // const { position, velocity } = positionAndVelocity;
   // The position_velocity result is a key-value pair of ECI coordinates.
   // These are the base results from which all other coordinates are derived.
-  const epoch = new Date(julianToMillis(satrec.jdsatepoch));
-  const elapsedSinceEpochMillis = new Date().getTime() - epoch.getTime();
-  const daysSinceEpoch = elapsedSinceEpochMillis / 1000 / 60 / 60 / 24;
+  // const epoch = new Date(julianToMillis(satrec.jdsatepoch));
+  // const elapsedSinceEpochMillis = new Date().getTime() - epoch.getTime();
+  // const daysSinceEpoch = elapsedSinceEpochMillis / 1000 / 60 / 60 / 24;
   const gmst = satelliteJs.gstime(date);
   const positionEci = satelliteJs.eciToEcf(
     positionAndVelocity.position as satelliteJs.EciVec3<number>,
     gmst
   );
-  const positionGeodetic = satelliteJs.eciToGeodetic(
-    positionAndVelocity.position as satelliteJs.EciVec3<number>,
-    gmst
-  );
-  const { latitude, longitude, height } = positionGeodetic;
+  // const positionGeodetic = satelliteJs.eciToGeodetic(
+  //   positionAndVelocity.position as satelliteJs.EciVec3<number>,
+  //   gmst
+  // );
+  // const { latitude, longitude, height } = positionGeodetic;
   // const positionXYZ = latLngHeightToXYZ({
   //   latitude,
   //   longitude,
   //   height,
   // });
-  const positionXYZ = undefined;
   // console.log(`
   // position:       ${JSON.stringify(position)}
   // velocity:       ${JSON.stringify(velocity)}
@@ -60,15 +59,15 @@ const calculations = (satellite: any) => {
   // positionXYZ: {x: -0.01, y: 0.64, z: 0.766}
   // velocity: {x: -6.78, y: -0.768, z: 3.468}
   return {
-    daysSinceEpoch,
-    epoch,
-    height,
-    latitude,
-    longitude,
-    position,
+    // daysSinceEpoch,
+    // epoch,
+    // height,
+    // latitude,
+    // longitude,
+    // position,
     positionEci,
-    positionXYZ,
-    velocity,
+    // positionXYZ,
+    // velocity,
   };
 };
 export default class {
@@ -84,7 +83,7 @@ export default class {
     this.i = i;
     this.total = total;
   }
-  update(dt, firstRun) {
+  update(dt) {
     this.calculations = calculations(this);
     if (!this.calculations?.positionEci?.x) return;
     // this.object.position.set(0, 0, (this.i / this.total) * 100000);

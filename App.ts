@@ -8,6 +8,8 @@ export default class App {
   private firstRun = true;
   private hero;
   private satellites = [];
+  private updateIteration = 0;
+  private updateChunk = 100;
   private fetchData() {
     fetchSatellites.then((satellites: any) => {
       this.satellites = satellites.map(
@@ -20,8 +22,6 @@ export default class App {
           })
       );
       this.satellites.forEach((s) => {
-        // scene.remove(s.object);
-        // Not sure if this is gonna memory leak but I can't seem to clear the scene beforehand. Hopefully doesn't matter (scene children length remains the same)
         scene.add(s.object);
       });
     });
@@ -48,7 +48,7 @@ export default class App {
     this.hero = new Hero();
     //
     // EARTH (scale = kilometers)
-    const earthGeometry = new THREE.SphereGeometry(6371, 20, 20);
+    const earthGeometry = new THREE.SphereGeometry(6371, 32, 32);
     const earthMaterial = new THREE.MeshBasicMaterial({
       color: 0x112233,
       wireframe: true,
@@ -80,15 +80,24 @@ export default class App {
     // scene.children?.forEach((child) => {
     //   scene.remove(child);
     // });
-    this.satellites.forEach((s) => {
-      // scene.remove(s.object);
-      // Not sure if this is gonna memory leak but I can't seem to clear the scene beforehand. Hopefully doesn't matter (scene children length remains the same)
-      // scene.add(s.object);
-      // if (this.firstRun || Math.random() > 0.9) {
-      s.update(dt, this.firstRun);
-      // }
-      // s.object.position.set(Math.random(), 0, 100000 - Math.random() * 50);
+    this.satellites.forEach((s, i) => {
+      if (
+        // this.firstRun ||
+        (this.updateIteration < i &&
+          i < this.updateIteration + this.updateIteration) ||
+        this.satellites.length - this.updateIteration < this.updateChunk
+      ) {
+        // scene.remove(s.object);
+        // Not sure if this is gonna memory leak but I can't seem to clear the scene beforehand. Hopefully doesn't matter (scene children length remains the same)
+        // scene.add(s.object);
+        s.update(dt);
+      }
     });
+    this.updateIteration =
+      this.updateIteration >= this.satellites.length
+        ? 0
+        : this.updateIteration + this.updateChunk;
+    // console.log(this.updateIteration);
     renderer.render(scene, this.hero.camHero.camera);
     if (this.firstRun) {
       setTimeout(() => {
