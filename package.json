@@ -1,0 +1,38 @@
+{
+  "name": "satellite-bitch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "parcel index.html --open",
+    "build": "parcel build index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/entozoon/satellite-bitch.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/entozoon/satellite-bitch/issues"
+  },
+  "homepage": "https://github.com/entozoon/satellite-bitch#readme",
+  "dependencies": {
+    "@types/three": "^0.136.1",
+    "behaviours": "0.0.1",
+    "engine": "^1.0.0",
+    "examples": "^0.1.0",
+    "jsm": "0.0.1",
+    "lib": "^4.3.3",
+    "objects": "^0.3.0",
+    "three": "^0.136.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.8",
+    "parcel-bundler": "^1.12.5",
+    "typescript": "^4.5.4"
+  }
+}
