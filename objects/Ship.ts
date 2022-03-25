@@ -37,12 +37,13 @@ export default class {
     },
   };
   constructor({ offset }: { offset?: { x: number; y: number; z: number } }) {
-    const shipGeometry = new THREE.BoxGeometry(6, 1, 2);
+    const shipGeometry = new THREE.BoxGeometry(2, 0.5, 1);
     this.object = new THREE.Mesh(
       shipGeometry,
       new THREE.MeshPhongMaterial({
         side: THREE.DoubleSide, // debug only
         color: 0xaaaaaa,
+        opacity: 0.2,
         // wireframe: true,
       })
     );
@@ -62,54 +63,6 @@ export default class {
   public move(direction, sign = 1) {
     this.impulses[direction].speed +=
       this.impulses[direction].acceleration * sign;
-  }
-  public fire() {
-    const raycaster = new THREE.Raycaster();
-    // Probs work different when I get it casting to the plane mesh
-    // raycaster.params.Line.threshold = 999;
-    // raycaster.params.Points.threshold = 999;
-    raycaster.setFromCamera(new Vector3(0, 0, 0), this.camera);
-    const intersects = raycaster.intersectObjects(scene.children);
-    // intersects.forEach((intersect) => {
-    //   intersect.object?.material?.color.set(0xffffff);
-    // });
-    // console.log(intersects);
-    intersects[0]?.object.material?.color.set(0xffffff);
-    this.cylinderFuckery();
-  }
-  cylinderFuckery() {
-    const cylinderLength = 100;
-    const cylinder = new THREE.Mesh(
-      new THREE.CylinderBufferGeometry(
-        ...Object.values({
-          radiusTop: 4,
-          radiusBottom: 4,
-          height: cylinderLength,
-          radialSegments: 3,
-        })
-      ),
-      new THREE.MeshPhongMaterial({
-        color: 0xffaa00,
-      })
-    );
-    let axis = this.object.rotation.toVector3();
-    // oooooh, I do have a cheeky idea!
-    // have the object always exist, but invisible.. rotating the same as the ship. So stupid though.
-    // I'm really starting to hate the non-absolute nature of threejs
-    console.log(axis);
-    // axis.z += 1;
-    // cylinder.rotateOnAxis(this.object.rotation.toVector3(), 2);
-    // cylinder.rotateOnAxis(new Vector3(0, 0, 1), 2);
-    cylinder.rotateOnAxis(axis, 2);
-    // cylinder.rotation = this.object.rotation;
-
-    // cylinder.position.x = this.object.position.x;
-    // cylinder.position.y = this.object.position.y;
-    // cylinder.position.z = this.object.position.z - cylinderLength / 2;
-    scene.add(cylinder);
-    setTimeout(() => {
-      scene.remove(cylinder);
-    }, 1000);
   }
   update(dt: number) {
     for (const direction in this.impulses) {

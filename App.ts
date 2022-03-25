@@ -35,7 +35,7 @@ epoch:          ${epoch.toISOString()}
 daysSinceEpoch: ${daysSinceEpoch}
 longitude:      ${positionGeodetic.longitude},
 latitude:       ${positionGeodetic.latitude},
-height:         ${positionGeodetic.height}
+height(km):     ${positionGeodetic.height}
     `);
   }, 1000);
 };
@@ -87,36 +87,11 @@ export default class App {
     delete this.hero;
     this.hero = new Hero();
     //
-    // GUFF
-    const geometry = new THREE.BoxGeometry(20, 20, 20);
-    this.cubeSpinner = new THREE.Mesh(
-      geometry,
-      new THREE.MeshPhongMaterial({
-        side: THREE.DoubleSide, // debug only
-        color: 0x00aa55,
-      })
-    );
-    this.cubeSpinner.castShadow = true;
-    this.cubeSpinner.receiveShadow = true;
-    this.cubeSpinner.position.set(0, 0, -100);
-    scene.add(this.cubeSpinner);
-    for (let i = 0; i < 100; i++) {
-      const cube = new THREE.Mesh(
-        geometry,
-        new THREE.MeshPhongMaterial({
-          side: THREE.DoubleSide, // debug only
-          color: 0xff0000,
-        })
-      );
-      cube.castShadow = true;
-      cube.receiveShadow = true;
-      cube.position.set(
-        Math.random() * 1000 - 500,
-        Math.random() * 1000 - 500,
-        Math.random() * 1000 - 500
-      );
-      scene.add(cube);
-    }
+    // EARTH (scale = kilometers)
+    const geometry = new THREE.SphereGeometry(6371, 64, 64);
+    const material = new THREE.MeshBasicMaterial({ color: 0xaaccff });
+    const sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
     //
     const lightAmbient = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(lightAmbient);
@@ -125,6 +100,5 @@ export default class App {
     const dt = clock.getDelta(); // Always use this
     this.hero.update(dt);
     renderer.render(scene, this.hero.camHero.camera);
-    this.cubeSpinner.rotateOnAxis(new THREE.Vector3(0, 1, 0), dt * 0.5);
   }
 }
