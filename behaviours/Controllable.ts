@@ -44,23 +44,23 @@ export default class {
     //   },
     //   false
     // );
-    // document.body.addEventListener(
-    //   "gesturend",
-    //   (e) => {
-    //     this.keyFind("w").pressed = false;
-    //     this.keyFind("s").pressed = false;
-    //   },
-    //   false
-    // );
+    document.body.addEventListener(
+      "gesturend",
+      (e) => {
+        this.keyFind("w").pressed = false;
+        this.keyFind("s").pressed = false;
+      },
+      false
+    );
     document.body.addEventListener("wheel", (e) => {
-      e.preventDefault();
       if (e.deltaY < 0) {
         this.keyFind("w").pressed = true;
       } else if (e.deltaY > 0) {
         this.keyFind("s").pressed = true;
       } else {
-        this.keyFind("w").pressed = false;
-        this.keyFind("s").pressed = false;
+        // Argh, there is no end gesture for wheel
+        // this.keyFind("w").pressed = false;
+        // this.keyFind("s").pressed = false;
       }
     });
   }
