@@ -18,8 +18,8 @@ export default class {
     this.camera = new THREE.PerspectiveCamera(
       70,
       window.innerWidth / window.innerHeight,
-      1,
-      1000000 // render distance (km in this case)
+      0.0001,
+      10000000 // render distance (km in this case)
     ); //      ⭡y
     //       z ↙⭢ x
     addToScene && scene.add(this.camera);

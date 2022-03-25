@@ -3,11 +3,11 @@ import Camera from "../engine/Camera";
 import Ship from "../objects/Ship";
 export default class {
   public ship = new Ship({
-    offset: { x: 0, y: 0, z: 100000 },
+    offset: { x: 0, y: -65000, z: 20000, rotateX: 1.2 }, // 100000
   });
   public camHero = new Camera({
     pov: this.ship.object,
-    offset: { x: 0, y: 0, z: 1 },
+    offset: { x: 0, y: 0, z: 0 },
     addToScene: true,
   });
   // public camShip = new Camera({

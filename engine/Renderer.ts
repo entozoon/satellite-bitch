@@ -8,10 +8,11 @@ const Renderer = () => {
     failIfMajorPerformanceCaveat: true,
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
-  // renderer.shadowMap.type = THREE.BasicShadowMap;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.enabled = false;
+  renderer.shadowMap.type = THREE.BasicShadowMap;
+  // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   // Brutal body replace, to cancel event listeners and the like
+  renderer.localClippingEnabled = false;
   document.body.replaceWith(document.body.cloneNode(true));
   const wrapper = document.querySelector(".app-wrapper") as HTMLElement;
   wrapper.querySelector("canvas")?.remove();
@@ -23,5 +24,7 @@ export let scene;
 export const reset = () => {
   renderer = Renderer();
   scene = new THREE.Scene();
+  const ambient = new THREE.AmbientLight(0xffffff, 1);
+  scene.add(ambient);
 };
 export const clock = new THREE.Clock();

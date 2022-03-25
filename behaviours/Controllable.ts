@@ -2,14 +2,18 @@ import { Vector3 } from "three";
 export default class {
   private parent;
   private keys = [
-    { keys: ["w", "ArrowUp"], pressed: false },
-    { keys: ["s", "ArrowDown"], pressed: false },
-    { keys: ["a", "ArrowLeft"], pressed: false },
-    { keys: ["d", "ArrowRight"], pressed: false },
-    { keys: ["q"], pressed: false },
-    { keys: ["e"], pressed: false },
+    { keys: ["w"], pressed: false },
+    { keys: ["s"], pressed: false },
+    { keys: ["a"], pressed: false },
+    { keys: ["d"], pressed: false },
+    { keys: ["ArrowUp"], pressed: false },
+    { keys: ["ArrowDown"], pressed: false },
+    { keys: ["ArrowLeft"], pressed: false },
+    { keys: ["ArrowRight"], pressed: false },
+    // { keys: ["q"], pressed: false },
+    // { keys: ["e"], pressed: false },
     { keys: [" "], pressed: false },
-    { keys: ["z"], pressed: false },
+    // { keys: ["Shift"], pressed: false },
   ];
   private keysReserved = [].concat.apply(
     [],
@@ -52,8 +56,15 @@ export default class {
   }
   public update(dt: number) {
     const { ship } = this.parent;
-    if (this.keyFind(" ").pressed) {
+    if (this.keyFind("w").pressed) {
       ship.move("forward", 1);
+    }
+    if (this.keyFind(" ").pressed) {
+      // JIC
+      ship.move("forward", 1);
+    }
+    if (this.keyFind("s").pressed) {
+      ship.move("forward", -1);
     }
     // if (this.keyFind("q").pressed) {
     //   ship.move("yaw", -1);
@@ -61,18 +72,22 @@ export default class {
     // if (this.keyFind("e").pressed) {
     //   ship.move("yaw", 1);
     // }
-    if (this.keyFind("w").pressed) {
+    if (this.keyFind("ArrowUp").pressed) {
       ship.move("pitch", -1);
     }
-    if (this.keyFind("s").pressed) {
+    if (this.keyFind("ArrowDown").pressed) {
       ship.move("pitch", 1);
     }
     if (this.keyFind("a").pressed) {
-      // ship.move("roll", -1);
-      ship.move("yaw", -1);
+      ship.move("right", -1);
     }
     if (this.keyFind("d").pressed) {
-      // ship.move("roll", 1);
+      ship.move("right", 1);
+    }
+    if (this.keyFind("ArrowLeft").pressed) {
+      ship.move("yaw", -1);
+    }
+    if (this.keyFind("ArrowRight").pressed) {
       ship.move("yaw", 1);
     }
   }

@@ -11,6 +11,11 @@ export default class {
       acceleration: 100,
       drag: 50,
     },
+    right: {
+      speed: 0, // m/s
+      acceleration: 100,
+      drag: 50,
+    },
     yaw: {
       speed: 0,
       acceleration: 0.2,
@@ -27,7 +32,11 @@ export default class {
       drag: 0.1,
     },
   };
-  constructor({ offset }: { offset?: { x: number; y: number; z: number } }) {
+  constructor({
+    offset,
+  }: {
+    offset?: { x: number; y: number; z: number; rotateX: number };
+  }) {
     const shipGeometry = new THREE.BoxGeometry(0.04, 0.02, 0.02);
     this.object = new THREE.Mesh(
       shipGeometry,
@@ -38,13 +47,15 @@ export default class {
       // })
       new THREE.MeshBasicMaterial({
         opacity: 0,
+        transparent: true,
       })
     );
-    this.object.castShadow = true;
-    this.object.receiveShadow = true;
+    this.object.castShadow = false;
+    this.object.receiveShadow = false;
     this.object.position.x = offset?.x || 0;
     this.object.position.y = offset?.y || 0;
     this.object.position.z = offset?.z || 0;
+    this.object.rotateX(offset?.rotateX || 0);
     scene.add(this.object);
     //
   }
@@ -66,6 +77,7 @@ export default class {
         : impulse.speed;
     }
     this.object.translateZ(-this.impulses.forward.speed * dt);
+    this.object.translateX(this.impulses.right.speed * dt);
     this.object.rotateOnAxis(
       new Vector3(0, -1, 0),
       this.impulses.yaw.speed * dt
