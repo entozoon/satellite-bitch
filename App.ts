@@ -66,6 +66,7 @@ export default class App {
     delete this.hero;
     this.hero = new Hero();
     //
+    //
     // EARTH (scale = kilometers)
     const earthGeometry = new THREE.SphereGeometry(6371, 64, 64);
     const earthMaterial = new THREE.MeshPhongMaterial({
@@ -86,6 +87,7 @@ export default class App {
     // Looking bang down on the north pole
     const earth = new THREE.Mesh(earthGeometry, earthMaterial);
     earth.rotation.set(Math.PI / 2, 0, 0);
+    earth.name = "earth";
     scene.add(earth);
     //
     // MOON (scale = kilometers)
@@ -96,6 +98,7 @@ export default class App {
     // Looking bang down on the north pole
     const moon = new THREE.Mesh(moonGeometry, moonMaterial);
     moon.position.set(0, -384400, 0);
+    moon.name = "moon";
     scene.add(moon);
     //
     // this.fakeSatellites();
@@ -105,6 +108,41 @@ export default class App {
       this.fetchData();
     }, 24 * 60 * 60 * 1000);
     // !!
+    // Raycasting ?
+    // Having issues. I mean, it should work.. e.g.
+    // https://threejs.org/examples/?q=raycast#webgl_interactive_points
+    // And.. it kinda does but
+    // I'm diong a single point for each thing rather than a cloud or typical mesh so..
+    // const raycaster = new THREE.Raycaster(
+    //   undefined,
+    //   undefined,
+    //   0.0001,
+    //   10000000
+    // );
+    // raycaster.params.Points.threshold = 40; // Gotta be near it?
+    // const canvas = document.querySelector("canvas");
+    // document.addEventListener("mousemove", (e) => {
+    //   e.preventDefault();
+    //   const pointer = {
+    //     // x: (e.clientX / canvas.width) * 2 - 1,
+    //     // y: (e.clientY / canvas.height) * 2 - 1,
+    //     x: (e.clientX / window.innerWidth) * 2 - 1,
+    //     y: (e.clientY / window.innerHeight) * 2 - 1,
+    //   };
+    //   raycaster.setFromCamera(pointer, this.hero.camHero.camera);
+    //   const intersects = raycaster.intersectObjects(
+    //     scene.children
+    //     // this.satellites.map((s) => s.object),
+    //   );
+    //   intersects
+    //     .filter((i) => !["earth"].includes(i.object.name))
+    //     .forEach((i) => {
+    //       console.log(i.object.name);
+    //       i.object?.material?.color.set(0xff0000);
+    //       // i.object?.material?.colorsNeedUpdate = true;
+    //     });
+    //   renderer.render(scene, this.hero.camHero.camera);
+    // });
   }
   loop(time) {
     const dt = clock.getDelta(); // Always use this

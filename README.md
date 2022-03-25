@@ -4,7 +4,5 @@
 
 ## TODO
 
-- Moon!
 - Anaglyph Mode
-- Space stations
-- Colouring
+- Colouring per device type?

@@ -78,7 +78,7 @@ export default class {
   public total;
   constructor({ satellite, cameraPosition, i, total, highlight = false }) {
     Object.assign(this, satellite);
-    this.object = satelliteObject(highlight);
+    this.object = satelliteObject(satellite, highlight);
     this.cameraPosition = cameraPosition;
     this.i = i;
     this.total = total;
