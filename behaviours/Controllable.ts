@@ -55,12 +55,12 @@ export default class {
     if (this.keyFind(" ").pressed) {
       ship.move("forward", 1);
     }
-    if (this.keyFind("q").pressed) {
-      ship.move("yaw", -1);
-    }
-    if (this.keyFind("e").pressed) {
-      ship.move("yaw", 1);
-    }
+    // if (this.keyFind("q").pressed) {
+    //   ship.move("yaw", -1);
+    // }
+    // if (this.keyFind("e").pressed) {
+    //   ship.move("yaw", 1);
+    // }
     if (this.keyFind("w").pressed) {
       ship.move("pitch", -1);
     }
@@ -68,13 +68,12 @@ export default class {
       ship.move("pitch", 1);
     }
     if (this.keyFind("a").pressed) {
-      ship.move("roll", -1);
+      // ship.move("roll", -1);
+      ship.move("yaw", -1);
     }
     if (this.keyFind("d").pressed) {
-      ship.move("roll", 1);
-    }
-    if (this.keyFind("z").pressed) {
-      ship.fire();
+      // ship.move("roll", 1);
+      ship.move("yaw", 1);
     }
   }
 }

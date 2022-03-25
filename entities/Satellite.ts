@@ -12,7 +12,7 @@ export default class {
   }
   update(dt) {
     // this.object.position.set(Math.random(), 0, 100000 - Math.random() * 100000);
-    this.object.position.set(0, 0, 100000 - (this.i * this.total) / 100000);
+    this.object.position.set(0, 0, (this.i / this.total) * 100000);
     const distanceFromCamera = this.cameraPosition.distanceTo(
       this.object.position
     );

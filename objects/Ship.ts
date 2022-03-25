@@ -8,8 +8,8 @@ export default class {
   private impulses = {
     forward: {
       speed: 0, // m/s
-      acceleration: 2,
-      drag: 1,
+      acceleration: 100,
+      drag: 50,
     },
     yaw: {
       speed: 0,
