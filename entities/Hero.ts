@@ -24,5 +24,6 @@ export default class {
     this.controls.update(dt);
     this.camHero.update(dt);
     // this.camShip.update(dt);
+    // console.log(this.ship.object.position);
   }
 }

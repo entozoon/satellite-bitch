@@ -4,7 +4,7 @@ import { clock, renderer, reset, scene } from "./engine/Renderer";
 import * as satelliteJs from "satellite.js";
 import { fetchSatellites } from "./engine/Data";
 import { julianToMillis, latLngToXYZUnit } from "./lib/utils";
-import { createSatelliteObject } from "./objects/Satellite";
+import Satellite from "./entities/Satellite";
 export const anaglyphMode = false;
 const attemptStuff = ({ name, tle1, tle2, sat }) => {
   // Initialize a satellite record
@@ -48,13 +48,32 @@ pos:          ${JSON.stringify(
 };
 export default class App {
   private hero;
-  private satellites;
-  private satelliteObjects = [];
+  private satellites = [];
   private fetchData() {
     fetchSatellites.then((satellites) => {
-      this.satellites = satellites || [];
-      this.satelliteObjects = satellites.map(createSatelliteObject);
+      this.satellites = satellites.map(
+        (satellite, i) =>
+          new Satellite({
+            satellite,
+            cameraPosition: this.hero.ship.object.position,
+            i,
+          })
+      );
     });
+  }
+  private fakeSatellites() {
+    this.satellites = [];
+    const total = 1000;
+    for (let i = 0; i < total; i++) {
+      this.satellites.push(
+        new Satellite({
+          satellite: {},
+          cameraPosition: this.hero.ship.object.position,
+          i,
+          total,
+        })
+      );
+    }
   }
   constructor() {
     //
@@ -72,10 +91,13 @@ export default class App {
     const lightAmbient = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(lightAmbient);
     //
-    this.fetchData();
-    setInterval(() => {
-      this.fetchData();
-    }, 24 * 60 * 60 * 1000);
+    // !!
+    // this.fetchData();
+    // setInterval(() => {
+    //   this.fetchData();
+    // }, 24 * 60 * 60 * 1000);
+    // !!
+    this.fakeSatellites();
     //
     // attemptStuff({
     //   name: "ISS (ZARYA)",
@@ -87,10 +109,15 @@ export default class App {
   loop(time) {
     const dt = clock.getDelta(); // Always use this
     this.hero.update(dt);
-    this.satelliteObjects.forEach((satelliteObject) => {
-      // scene.remove(satelliteObject);
-      satelliteObject.position.set(0, 0, 100000 - Math.random() * 50);
-      scene.add(satelliteObject);
+    // scene.children?.forEach((child) => {
+    //   scene.remove(child);
+    // });
+    this.satellites.forEach((s) => {
+      // scene.remove(s.object);
+      // Not sure if this is gonna memory leak but I can't seem to clear the scene beforehand. Hopefully doesn't matter (scene children length remains the same)
+      scene.add(s.object);
+      s.update(dt);
+      // s.object.position.set(Math.random(), 0, 100000 - Math.random() * 50);
     });
     renderer.render(scene, this.hero.camHero.camera);
   }

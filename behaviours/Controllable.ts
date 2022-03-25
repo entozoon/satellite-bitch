@@ -48,7 +48,7 @@ export default class {
       rotation: THREE.Euler;
       // matrixWorld: THREE.Matrix4;
       // quaternion: THREE.Quaternion;
-    } = this.parent.ship.object;
+    } = this.parent?.ship?.object || {};
   }
   public update(dt: number) {
     const { ship } = this.parent;
