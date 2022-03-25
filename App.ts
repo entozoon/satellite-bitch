@@ -17,20 +17,26 @@ const attemptStuff = ({ name, tle1, tle2 }) => {
   setInterval(() => {
     date.setSeconds(date.getSeconds() + 60);
     const positionAndVelocity = satelliteJs.propagate(satrec, date);
+    if (!positionAndVelocity.position) return;
     // The position_velocity result is a key-value pair of ECI coordinates.
     // These are the base results from which all other coordinates are derived.
-    const positionEci = positionAndVelocity.position,
-      velocityEci = positionAndVelocity.velocity;
     const epoch = new Date(julianToMillis(satrec.jdsatepoch));
     const elapsedSinceEpochMillis = new Date().getTime() - epoch.getTime();
-    const elapsedSinceEpochDays = elapsedSinceEpochMillis / 1000 / 60 / 60 / 24;
+    const daysSinceEpoch = elapsedSinceEpochMillis / 1000 / 60 / 60 / 24;
+    const gmst = satelliteJs.gstime(date);
+    const positionGeodetic = satelliteJs.eciToGeodetic(
+      positionAndVelocity.position as satelliteJs.EciVec3<number>,
+      gmst
+    );
     console.log(`
-    positionAndVelocity: ${JSON.stringify(positionAndVelocity)}
-    positionEci: ${JSON.stringify(positionEci)}
-    velocityEci: ${JSON.stringify(velocityEci)}
-    epoch: ${epoch.toISOString()}
-    elapsedSinceEpochDays: ${elapsedSinceEpochDays}
-  `);
+position:       ${JSON.stringify(positionAndVelocity.position)}
+velocity:       ${JSON.stringify(positionAndVelocity.velocity)}
+epoch:          ${epoch.toISOString()}
+daysSinceEpoch: ${daysSinceEpoch}
+longitude:      ${positionGeodetic.longitude},
+latitude:       ${positionGeodetic.latitude},
+height:         ${positionGeodetic.height}
+    `);
   }, 1000);
 };
 export default class App {
