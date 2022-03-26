@@ -45,7 +45,7 @@ export const satelliteObject = (satellite, highlight = false) => {
   var geometry = new THREE.BufferGeometry();
   geometry.setAttribute(
     "position",
-    new THREE.Float32BufferAttribute(new THREE.Vector3().toArray(), 3)
+    new THREE.Float32BufferAttribute([0, 0, 0], 3)
   );
   // // geometry.computeBo?phere.radius += 200;
   const material = new THREE.PointsMaterial({

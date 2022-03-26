@@ -1,7 +1,13 @@
 import * as THREE from "three";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import App from "./App";
+const loadDir =
+  window.location.hostname === "localhost" ? "http://localhost:8000/" : "/";
+const fontLoader = new FontLoader();
 const initApp = (): void => {
-  new App();
+  fontLoader.load(`${loadDir}/helvetiker_regular.typeface.json`, (font) => {
+    new App({ font });
+  });
 };
 window.addEventListener("DOMContentLoaded", initApp);
 // @ts-ignore

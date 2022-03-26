@@ -5,6 +5,7 @@ import { fetchSatellites } from "./engine/Data";
 import Satellite from "./entities/Satellite";
 export const anaglyphMode = false;
 export default class App {
+  private font;
   private firstRun = true;
   private hero;
   private satellites = [];
@@ -25,42 +26,47 @@ export default class App {
       "https://api.allorigins.win/raw?url=https://celestrak.com/NORAD/elements/gp.php?GROUP=active&FORMAT=tle",
     ].forEach((url) => {
       fetchSatellites(url).then((satellites: any) => {
-        satellites?.forEach((satellite, i) => {
-          const s = new Satellite({
-            satellite,
-            cameraPosition: this.hero.ship.object.position,
-            i,
-            total: satellites.length,
-            highlight: satellite.name === "ISS (ZARYA)",
+        satellites
+          ?.filter((s) => s.name)
+          .forEach((satellite, i) => {
+            const s = new Satellite({
+              satellite,
+              camera: this.hero.ship.object,
+              i,
+              total: satellites.length,
+              highlight: satellite.name === "ISS (ZARYA)",
+              font: this.font,
+            });
+            // Avoid duplication
+            if (!this.satellites.find((_) => _.name === s.name)) {
+              this.satellites.push(s);
+              scene.add(s.object);
+              scene.add(s.label);
+            }
           });
-          // Avoid duplication
-          if (!this.satellites.find((_) => _.name === s.name)) {
-            this.satellites.push(s);
-            scene.add(s.object);
-          }
-        });
       });
     });
     // setTimeout(() => {
     //   console.log(this.satellites.find((_) => _.name === "CORIOLIS"));
     // }, 5000);
   }
-  private fakeSatellites() {
-    this.satellites = [];
-    const total = 1000;
-    for (let i = 0; i < total; i++) {
-      this.satellites.push(
-        new Satellite({
-          satellite: {},
-          cameraPosition: this.hero.ship.object.position,
-          i,
-          total,
-        })
-      );
-    }
-  }
-  constructor() {
+  // private fakeSatellites() {
+  //   this.satellites = [];
+  //   const total = 1000;
+  //   for (let i = 0; i < total; i++) {
+  //     this.satellites.push(
+  //       new Satellite({
+  //         satellite: {},
+  //         cameraPosition: this.hero.ship.object.position,
+  //         i,
+  //         total,
+  //       })
+  //     );
+  //   }
+  // }
+  constructor({ font }) {
     //
+    this.font = font;
     reset();
     renderer.setAnimationLoop(this.loop.bind(this));
     delete this.hero;

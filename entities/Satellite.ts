@@ -1,3 +1,4 @@
+import { labelObject } from "../objects/labelObject";
 import * as satelliteJs from "satellite.js";
 import Controllable from "../behaviours/Controllable";
 import { satelliteObject } from "../objects/Satellite";
@@ -72,14 +73,21 @@ const calculations = (satellite: any) => {
 export default class {
   public name;
   public object;
+  public label;
   public controls = new Controllable(this);
-  public cameraPosition;
+  public camera;
   public i;
   public total;
-  constructor({ satellite, cameraPosition, i, total, highlight = false }) {
+  public font;
+  constructor({ satellite, camera, i, total, highlight = false, font }) {
     Object.assign(this, satellite);
     this.object = satelliteObject(satellite, highlight);
-    this.cameraPosition = cameraPosition;
+    this.label = labelObject({
+      name: satellite.name,
+      color: this.object.material.color,
+      font,
+    });
+    this.camera = camera;
     this.i = i;
     this.total = total;
   }
@@ -97,19 +105,23 @@ export default class {
       this.calculations.positionEci.y,
       this.calculations.positionEci.z
     );
-    const distanceFromCamera = this.cameraPosition.distanceTo(
+    // OPTIMISATION: Only update visible positions
+    this.label.position.set(
+      this.calculations.positionEci.x,
+      this.calculations.positionEci.y,
+      this.calculations.positionEci.z
+    );
+    this.label.rotation.set(
+      this.camera.rotation.x,
+      this.camera.rotation.y,
+      this.camera.rotation.z
+    );
+    const distanceFromCamera = this.camera.position.distanceTo(
       this.object.position
     );
-    // console.log(distanceFromCamera); // 25600001
+    this.label.visible = distanceFromCamera < 2000;
     const scale = 1 + distanceFromCamera;
-    // if (this.i === 1 && Math.random() > 0.99) {
-    // if (firstRun) {
-    // console.log(this.object.position);
-    // console.log(this.cameraPosition);
-    // console.log(distanceFromCamera);
-    // console.log(this.calculations);
-    // console.log(this);
-    // }
     this.object.scale.set(scale, scale, 1);
+    // this.label.scale.set(scale / 10000, scale / 10000, 1); // Not sure if I like no sizeAttenuation for text..
   }
 }
