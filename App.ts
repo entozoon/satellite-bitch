@@ -46,9 +46,18 @@ export default class App {
           });
       });
     });
-    // setTimeout(() => {
-    //   console.log(this.satellites.find((_) => _.name === "CORIOLIS"));
-    // }, 5000);
+    setTimeout(() => {
+      // console.log(this.satellites.find((s) => s.name === "CORIOLIS"));
+      console.log(
+        (
+          (this.satellites.filter((s) =>
+            s.name.toLowerCase().includes("starlink")
+          ).length /
+            this.satellites.length) *
+          100
+        ).toFixed(2) + "% of all major satellites are STARLINK"
+      );
+    }, 10000);
   }
   // private fakeSatellites() {
   //   this.satellites = [];
