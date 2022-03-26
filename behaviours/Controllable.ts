@@ -142,9 +142,9 @@ export const initTouchEvents = (controls) => {
       height: document.body.clientHeight,
     });
     controls.keyFind(dir).pressed = true;
-    setTimeout(() => {
-      kill(); // JIC
-    }, 10000);
+    // setTimeout(() => {
+    //   kill(); // JIC
+    // }, 10000);
   });
   const kill = () => {
     controls.keyFind("w").pressed = false;
