@@ -17,18 +17,18 @@ export default class {
     //   z: 20000,
     //   rotation: { x: 1.2, y: 0, z: 0 },
     // },
-    // Standard
+    // // Testing labels
     // offset: {
-    //   x: -2673,
-    //   y: 74631,
-    //   z: 41351,
+    //   x: -1152,
+    //   y: 8309,
+    //   z: 4138,
     //   rotation: { x: -1.06, y: -0.02, z: -2.68 },
     // },
-    // Testing labels
+    // Standard
     offset: {
-      x: -1152,
-      y: 8309,
-      z: 4138,
+      x: -2673,
+      y: 74631,
+      z: 41351,
       rotation: { x: -1.06, y: -0.02, z: -2.68 },
     },
   });
