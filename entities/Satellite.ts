@@ -100,28 +100,29 @@ export default class {
     // const x = this.calculations.positionXYZ?.x * earthRadius;
     // const y = this.calculations.positionXYZ?.y * earthRadius;
     // const z = this.calculations.positionXYZ?.z * earthRadius;
+    const distanceFromCamera = this.camera.position.distanceTo(
+      this.object.position
+    );
     this.object.position.set(
       this.calculations.positionEci.x,
       this.calculations.positionEci.y,
       this.calculations.positionEci.z
     );
-    // OPTIMISATION: Only update visible positions
-    this.label.position.set(
-      this.calculations.positionEci.x,
-      this.calculations.positionEci.y,
-      this.calculations.positionEci.z
-    );
-    this.label.rotation.set(
-      this.camera.rotation.x,
-      this.camera.rotation.y,
-      this.camera.rotation.z
-    );
-    const distanceFromCamera = this.camera.position.distanceTo(
-      this.object.position
-    );
-    this.label.visible = distanceFromCamera < 2000;
     const scale = 1 + distanceFromCamera;
     this.object.scale.set(scale, scale, 1);
+    if (distanceFromCamera < 2000) {
+      this.label.position.set(
+        this.calculations.positionEci.x,
+        this.calculations.positionEci.y,
+        this.calculations.positionEci.z
+      );
+      this.label.rotation.set(
+        this.camera.rotation.x,
+        this.camera.rotation.y,
+        this.camera.rotation.z
+      );
+      this.label.visible = true;
+    } else this.label.visible = false;
     // this.label.scale.set(scale / 10000, scale / 10000, 1); // Not sure if I like no sizeAttenuation for text..
   }
 }
