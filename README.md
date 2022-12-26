@@ -5,4 +5,4 @@
 ## TODO
 
 - Anaglyph Mode
-- Colouring per device type?
+- Colouring per device type / country of origin
